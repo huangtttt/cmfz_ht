@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!-- 与接口的全类名对应,包名+类名 -->
+<mapper namespace="com.baizhi.dao.AlbumDao">
+    <sql id="albumAll">
+      a.id,a.title,publishDate,count,coverImg,star,author,broadCast,brief
+    </sql>
+
+    <resultMap id="queryAllResultMap" type="com.baizhi.entity.Album">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="publishDate" column="publishDate"/>
+        <result property="count" column="count"/>
+        <result property="coverImg" column="coverImg"/>
+        <result property="star" column="star"/>
+        <result property="author" column="author"/>
+        <result property="broadCast" column="broadCast"/>
+        <result property="brief" column="brief"/>
+        <collection property="children" ofType="com.baizhi.entity.Chapter">
+            <id property="id" column="cid"/>
+            <result property="title" column="ctitle"/>
+            <result property="size" column="size"/>
+            <result property="duration" column="duration"/>
+            <result property="downPath" column="downPath"/>
+            <result property="uploadTime" column="uploadTime"/>
+        </collection>
+    </resultMap>
+
+    <select id="queryAllByPage" resultMap="queryAllResultMap">
+        select <include refid="albumAll"/>,c.id cid ,c.title ctitle,size,duration,downPath,uploadTime
+        from album a left join chapter c
+        on a.id = c.album_id
+        limit #{start},#{rows}
+    </select>
+
+    <select id="queryAll" resultMap="queryAllResultMap">
+        select <include refid="albumAll"/>,c.id cid ,c.title ctitle,size,duration,downPath,uploadTime
+        from album a inner join chapter c
+        on a.id = c.album_id
+    </select>
+
+    <select id="queryTotals" resultType="long">
+        select COUNT(id) from album
+    </select>
+
+    <insert id="insert" parameterType="com.baizhi.entity.Album">
+        insert into album values (null,#{title},#{publishDate},#{count},#{coverImg},#{star},#{author},#{broadCast},#{brief});
+    </insert>
+
+    <select id="queryOne" parameterType="String" resultType="com.baizhi.entity.Album">
+        select * from album where id=#{id};
+    </select>
+
+    <delete id="delete" parameterType="String">
+        delete from album where id=#{id}
+    </delete>
+
+
+</mapper>
+
+
+
+<!--
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.baizhi.dao.BannerDao">
+    <insert id="insert" parameterType="com.baizhi.entity.Banner">
+        insert into banner values (#{id},#{title},#{imgPath},#{descA},#{status},#{creationdate});
+    </insert>
+    <delete id="delete" parameterType="String">
+        delete from banner where id=#{id}
+    </delete>
+    <update id="update" parameterType="com.baizhi.entity.Banner">
+        update banner set  title=#{title},imgPath=#{imgPath},descA=#{descA},status=#{status},creationdate=#{creationdate}  where id=#{id};
+    </update>
+    <select id="queryAll" resultType="com.baizhi.entity.Banner">
+        select id,title,imgPath,descA,status,creationdate from banner;
+    </select>
+    <select id="queryOne" parameterType="com.baizhi.entity.Banner" resultType="com.baizhi.entity.Banner">
+        select id,title,imgPath,descA,status,creationdate from banner where id#{id};
+    </select>
+</mapper>
+-->
